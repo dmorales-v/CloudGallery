@@ -1,61 +1,63 @@
 /**
- * Lógica completa para CloudGallery con OpenRouter
+ * Lógica completa para Img2Img con OpenRouter
  */
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-// Función principal de generación
+// Función para convertir archivo a Base64
+function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
 async function generarImagen() {
-    // 1. Obtener valores de la interfaz
     const apiKey = document.getElementById('apiKeyInput').value.trim();
     const promptText = document.getElementById('promptInput').value.trim();
     const model = document.getElementById('modelSelect').value;
+    const fileInput = document.getElementById('fileInput');
 
-    // Validación básica
-    if (!apiKey) {
-        alert("Por favor, ingresa tu API Key.");
-        return;
-    }
-    if (!promptText) {
-        alert("Escribe algo para generar.");
+    if (!apiKey || !promptText || fileInput.files.length === 0) {
+        alert("Por favor, ingresa tu API Key, un prompt y una imagen.");
         return;
     }
 
     setLoadingState(true);
 
     try {
-        // 2. Realizar la llamada a OpenRouter
+        // 1. Convertir imagen subida a base64
+        const base64Image = await fileToBase64(fileInput.files[0]);
+
+        // 2. Preparar petición para modelo de Visión
         const response = await fetch(OPENROUTER_URL, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': 'https://dmorales-v.github.io/CloudGallery/',
-                'X-Title': 'CloudGallery AI',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: model,
-                messages: [{ role: "user", content: promptText }]
+                messages: [{
+                    role: "user",
+                    content: [
+                        { type: "text", text: promptText },
+                        { type: "image_url", image_url: { url: base64Image } }
+                    ]
+                }]
             })
         });
 
-        // 3. Procesar errores de respuesta
-        if (!response.ok) {
-            const errData = await response.json();
-            throw new Error(errData.error?.message || "Error al conectar con OpenRouter");
-        }
-
         const data = await response.json();
 
-        // 4. Extraer URL de la respuesta
-        // Nota: Si el modelo devuelve texto, este código lo mostrará. 
-        // Si es un modelo de imagen, el resultado suele ser una URL.
-        const result = data.choices[0].message.content;
-
-        const imgElement = document.getElementById('generatedImage');
-        imgElement.src = result;
-        document.getElementById('imageWrapper').style.display = 'block';
-
+        // 3. Mostrar resultado
+        if (data.choices && data.choices[0].message.content) {
+            document.getElementById('generatedImage').src = data.choices[0].message.content;
+            document.getElementById('imageWrapper').style.display = 'block';
+        }
     } catch (error) {
         alert("Error: " + error.message);
     } finally {
@@ -63,16 +65,9 @@ async function generarImagen() {
     }
 }
 
-// Control del estado de carga (Spinner)
 function setLoadingState(isLoading) {
-    const btn = document.getElementById('generateBtn');
-    const loader = document.getElementById('resultLoader');
-
-    btn.disabled = isLoading;
-    loader.style.display = isLoading ? 'flex' : 'none';
+    document.getElementById('generateBtn').disabled = isLoading;
+    document.getElementById('resultLoader').style.display = isLoading ? 'flex' : 'none';
 }
 
-// Inicialización de eventos
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('generateBtn').addEventListener('click', generarImagen);
-});
+document.getElementById('generateBtn').addEventListener('click', generarImagen);
