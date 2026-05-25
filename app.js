@@ -1,5 +1,5 @@
 /**
- * Lógica unificada para CloudGallery (OpenRouter)
+ * LÓGICA ESTRICTA: IMAGEN A IMAGEN OBLIGATORIO
  */
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -8,29 +8,20 @@ async function generar() {
     const apiKey = document.getElementById('apiKeyInput').value.trim();
     const prompt = document.getElementById('promptInput').value.trim();
     const fileInput = document.getElementById('fileInput');
+    const model = document.getElementById('modelSelect').value || "openai/gpt-4o";
 
-    // 1. Modelo por defecto para evitar errores si no seleccionan nada
-    const model = document.getElementById('modelSelect').value || "openai/dall-e-3";
-
-    if (!apiKey) { alert("Introduce tu API Key de OpenRouter"); return; }
-    if (!prompt) { alert("Escribe un prompt"); return; }
+    // VALIDACIÓN OBLIGATORIA
+    if (!apiKey) { alert("Introduce tu API Key"); return; }
+    if (!fileInput.files || fileInput.files.length === 0) {
+        alert("¡Error! Debes subir una imagen para comenzar.");
+        return;
+    }
+    if (!prompt) { alert("Escribe qué quieres modificar en la imagen"); return; }
 
     setLoadingState(true);
 
     try {
-        let bodyPayload = {
-            model: model,
-            messages: [{ role: "user", content: prompt }]
-        };
-
-        // 2. Si hay imagen subida, la convertimos a base64 y la incluimos
-        if (fileInput.files && fileInput.files[0]) {
-            const base64 = await toBase64(fileInput.files[0]);
-            bodyPayload.messages[0].content = [
-                { type: "text", text: prompt },
-                { type: "image_url", image_url: { url: base64 } }
-            ];
-        }
+        const base64 = await toBase64(fileInput.files[0]);
 
         const response = await fetch(OPENROUTER_URL, {
             method: 'POST',
@@ -40,18 +31,26 @@ async function generar() {
                 'X-Title': 'CloudGallery AI',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(bodyPayload)
+            body: JSON.stringify({
+                model: model,
+                messages: [{
+                    role: "user",
+                    content: [
+                        { type: "text", text: prompt },
+                        { type: "image_url", image_url: { url: base64 } }
+                    ]
+                }]
+            })
         });
 
         const data = await response.json();
 
-        // 3. Mostrar resultado
         if (data.choices && data.choices[0].message.content) {
             const resultUrl = data.choices[0].message.content;
             document.getElementById('generatedImage').src = resultUrl;
             document.getElementById('imageWrapper').style.display = 'block';
         } else {
-            throw new Error("El modelo no generó una respuesta válida.");
+            throw new Error("El modelo no devolvió una imagen.");
         }
 
     } catch (err) {
