@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dezgo AI Studio - Multi-Studio de IA Generativa</title>
+    <!-- CSS Estilos -->
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome para iconos premium -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Outfit para títulos, Inter para texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Contenedor Principal Cyberpunk -->
+    <div class="cyber-container">
+
+        <!-- Cabecera / Header -->
+        <header class="cyber-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-wand-magic-sparkles cyber-glow-icon"></i>
+                <h1>AIRFORCE<span>AI.STUDIO</span></h1>
+            </div>
+
+            <!-- Configuración de API Key con Opción de Privacidad -->
+            <div class="api-key-config">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-key input-icon"></i>
+                    <input type="password" id="apiKeyInput" placeholder="Introduce tu API.Airforce Key (sk-air-...)"
+                        autocomplete="off">
+                    <button type="button" id="toggleApiKeyBtn" class="btn-icon" title="Mostrar/Ocultar API Key">
+                        <i class="fa-solid fa-eye-slash" id="toggleApiKeyIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Layout de Contenido Grid -->
+        <div class="cyber-grid">
+
+            <!-- Panel de Controles (Formulario) -->
+            <aside class="control-panel">
+
+                <!-- Selector de Modo de Generación (Tabs) -->
+                <div class="mode-tabs">
+                    <button type="button" class="tab-btn active" data-mode="text2img">
+                        <i class="fa-solid fa-align-left"></i> Texto a Imagen
+                    </button>
+                    <button type="button" class="tab-btn" data-mode="img2img">
+                        <i class="fa-solid fa-image"></i> Imagen a Imagen
+                    </button>
+                    <button type="button" class="tab-btn" data-mode="img2vid">
+                        <i class="fa-solid fa-film"></i> Imagen a Video
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title-wrapper">
+                        <h2 class="section-title"><i class="fa-solid fa-sliders"></i> Ajustes</h2>
+                        <span class="mode-badge" id="activeModeBadge">TEXTO A IMAGEN</span>
+                    </div>
+
+                    <!-- Selector de Modelo de IA (Imagen) -->
+                    <div class="control-group" id="modelGroup">
+                        <label for="modelSelect">Modelo de IA (Imagen)</label>
+                        <div class="select-wrapper">
+                            <select id="modelSelect">
+                                <option value="flux-2-dev">🔞 Fotorrealismo +18 (Flux 2 Dev)</option>
+                                <option value="flux.1-schnell" selected>Flux.1 Schnell (Ultra Rápido)</option>
+                                <option value="flux.1-dev">Flux.1 Dev (Alta Calidad)</option>
+                                <option value="flux-2-pro">Flux 2 Pro (Calidad Profesional)</option>
+                                <option value="imagen-3">Google Imagen 3 (Fotorrealismo)</option>
+                                <option value="imagen-4">Google Imagen 4 (Máximo Detalle)</option>
+                                <option value="z-image">Z-Image (Estilos Artísticos)</option>
+                                <option value="flux-2-flex">Flux 2 Flex (Estilos Flexibles)</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="control-group hidden-control" id="videoModelGroup">
+                        <label for="videoModelSelect">Modelo de IA (Video)</label>
+                        <div class="select-wrapper">
+                            <select id="videoModelSelect">
+                                <option value="kling" selected>Kling AI (Calidad Cinematográfica)</option>
+                                <option value="luma">Luma Dream Machine (Movimiento Fluido)</option>
+                                <option value="pika">Pika AI (Efectos Especiales)</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <!-- Zona de Carga de Imagen (Dropzone) - Oculta por defecto en text2img -->
+                    <div class="control-group hidden-control" id="uploadGroup">
+                        <label>Imagen de Referencia</label>
+
+                        <div class="dropzone" id="dropzone">
+                            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                            <span class="dropzone-text">Arrastra una imagen aquí o haz clic para subir</span>
+                            <span class="dropzone-subtext">Formatos: PNG, JPG · Se optimizará automáticamente a
+                                768px</span>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        </div>
+
+                        <!-- Vista previa de la imagen cargada -->
+                        <div class="upload-preview" id="uploadPreview" style="display: none;">
+                            <img id="previewImg" src="" alt="Imagen cargada">
+                            <div class="preview-details">
+                                <span class="preview-filename" id="previewFilename">image.png</span>
+                                <span class="preview-size" id="previewSize">0 KB</span>
+                            </div>
+                            <button type="button" id="removeUploadBtn" class="btn-remove-upload"
+                                title="Eliminar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acordeón de Opciones Avanzadas -->
+                <div class="accordion-item">
+                    <button class="accordion-trigger" id="accordionBtn">
+                        <span><i class="fa-solid fa-gears"></i> Parámetros Avanzados</span>
+                        <i class="fa-solid fa-chevron-down accordion-arrow" id="accordionArrow"></i>
+                    </button>
+
+                    <div class="accordion-content" id="accordionContent">
+                        <!-- Negative Prompt (Solo para text2img e img2img) -->
+                        <div class="control-group" id="negativePromptGroup">
+                            <label for="negativePrompt">Negative Prompt</label>
+                            <textarea id="negativePrompt"
+                                placeholder="Ej: ugly, deformed, blurry, low quality, bad anatomy, text, watermark..."></textarea>
+                        </div>
+
+                        <!-- Pasos de Muestreo (Steps) - Común a todos -->
+                        <div class="control-group">
+                            <div class="label-with-value">
+                                <label for="stepsRange">Pasos (Steps)</label>
+                                <span class="badge-value" id="stepsValue">20</span>
+                            </div>
+                            <input type="range" id="stepsRange" min="10" max="50" value="20" step="1">
+                            <div class="range-limits">
+                                <span>10 (Rápido)</span>
+                                <span>50 (Detallado)</span>
+                            </div>
+                        </div>
+
+                        <!-- Fuerza de Cambio (Strength) - Solo para img2img -->
+                        <div class="control-group hidden-control" id="strengthGroup">
+                            <div class="label-with-value">
+                                <label for="strengthRange">Fuerza de Cambio (Strength)</label>
+                                <span class="badge-value badge-cyan" id="strengthValue">0.60</span>
+                            </div>
+                            <input type="range" id="strengthRange" min="0.05" max="0.95" value="0.60" step="0.05">
+                            <div class="range-limits">
+                                <span>0.05 (Original)</span>
+                                <span>0.95 (Nueva)</span>
+                            </div>
+                        </div>
+
+                        <!-- Intensidad de Movimiento (Motion Scale) - Solo para img2vid -->
+                        <div class="control-group hidden-control" id="motionGroup">
+                            <div class="label-with-value">
+                                <label for="motionRange">Intensidad de Movimiento</label>
+                                <span class="badge-value badge-magenta" id="motionValue">40</span>
+                            </div>
+                            <input type="range" id="motionRange" min="1" max="127" value="40" step="1">
+                            <div class="range-limits">
+                                <span>1 (Estático)</span>
+                                <span>127 (Rápido)</span>
+                            </div>
+                        </div>
+
+                        <!-- Relación de Aspecto (Aspect Ratio) - Solo para text2img -->
+                        <div class="control-group" id="aspectRatioGroup">
+                            <label>Relación de Aspecto (Aspect Ratio)</label>
+                            <div class="aspect-ratio-selector">
+                                <button type="button" class="aspect-btn active" data-ratio="1:1" title="Cuadrado">
+                                    <div class="ratio-box ratio-1-1"></div>
+                                    <span>1:1</span>
+                                </button>
+                                <button type="button" class="aspect-btn" data-ratio="2:3" title="Retrato (Vertical)">
+                                    <div class="ratio-box ratio-2-3"></div>
+                                    <span>2:3</span>
+                                </button>
+                                <button type="button" class="aspect-btn" data-ratio="3:2" title="Paisaje (Horizontal)">
+                                    <div class="ratio-box ratio-3-2"></div>
+                                    <span>3:2</span>
+                                </button>
+                            </div>
+                            <!-- Input oculto para registrar el valor activo -->
+                            <input type="hidden" id="aspectRatioInput" value="1:1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer del Panel (Créditos/Ayuda) -->
+                <div class="panel-info">
+                    <p><i class="fa-solid fa-circle-info"></i> La generación consume créditos de tu cuenta api.airforce
+                        según los parámetros y el modo activo.</p>
+                </div>
+            </aside>
+
+            <!-- Panel de Generación y Resultado -->
+            <main class="canvas-panel">
+
+                <!-- Entrada de Prompt -->
+                <div class="prompt-area">
+                    <div class="prompt-header">
+                        <label for="promptInput" id="promptLabel"><i class="fa-solid fa-comment-dots"></i> Escribe tu
+                            Prompt (Descripción de la imagen)</label>
+                    </div>
+                    <div class="prompt-input-wrapper">
+                        <textarea id="promptInput"
+                            placeholder="Ej: A futuristic cyberpunk samurai standing in the rain under glowing neon signs, highly detailed, octane render, 8k resolution..."></textarea>
+
+                        <!-- Botón de Generación Integrado -->
+                        <button id="generateBtn" class="btn-generate">
+                            <span class="btn-text">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="generateBtnText">Generar
+                                    Imagen</span>
+                            </span>
+                            <div class="loader-spinner" id="btnSpinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Resultado -->
+                <div class="result-container" id="resultContainer">
+
+                    <!-- Estado Inicial / Placeholder -->
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <i class="fa-regular fa-image" id="placeholderIcon"></i>
+                        </div>
+                        <h3 id="placeholderTitle">Tu obra de arte aparecerá aquí</h3>
+                        <p id="placeholderDesc">Escribe un prompt, ajusta las opciones en el panel y haz clic en
+                            "Generar Imagen" para comenzar.</p>
+                    </div>
+
+                    <!-- Estado de Carga (Scanning/Laser Animation) -->
+                    <div class="result-loader" id="resultLoader" style="display: none;">
+                        <div class="scanner-line"></div>
+                        <div class="loading-status">
+                            <div class="spinner-neon"></div>
+                            <span id="loaderStatusText">Renderizando neuronas...</span>
+                            <span class="loading-sub">Conectando con api.airforce API</span>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Visualización de Imagen -->
+                    <div class="image-display-wrapper" id="imageWrapper" style="display: none;">
+                        <img id="generatedImage" src="" alt="Imagen IA Generada">
+
+                        <!-- Acciones sobre el Resultado de Imagen -->
+                        <div class="result-overlay-actions">
+                            <button id="downloadBtn" class="btn-action" title="Descargar imagen a máxima resolución">
+                                <i class="fa-solid fa-download"></i> Descargar Imagen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Visualización de Video -->
+                    <div class="video-display-wrapper" id="videoWrapper" style="display: none;">
+                        <video id="generatedVideo" controls autoplay loop playsinline alt="Video IA Generado"></video>
+
+                        <!-- Acciones sobre el Resultado de Video -->
+                        <div class="result-overlay-actions">
+                            <button id="downloadVideoBtn" class="btn-action" title="Descargar video MP4">
+                                <i class="fa-solid fa-download"></i> Descargar Video
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Error -->
+                    <div class="result-error" id="resultError" style="display: none;">
+                        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+                        <h3>Error de Generación</h3>
+                        <p id="errorMessage">No se pudo procesar la solicitud. Verifica tu API Key y conexión.</p>
+                        <button id="retryBtn" class="btn-secondary-cyber">Reintentar</button>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Lógica -->
+    <script src="app.js"></script>
+</body>
+
+</html>

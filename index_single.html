@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dezgo AI Studio - Multi-Studio de IA Generativa</title>
+    <!-- CSS Estilos -->
+    <style>
+        /* ==========================================
+   DEZGO AI STUDIO - CYBERPUNK PREMIUM THEME
+   ========================================== */
+
+        /* 1. CONFIGURACIÓN GENERAL Y VARIABLES */
+        :root {
+            --bg-dark-base: #070a13;
+            --bg-dark-panel: #0d1222;
+            --bg-dark-input: #12182c;
+            --border-color: #1e294b;
+            --border-glow-cyan: rgba(0, 240, 255, 0.3);
+            --border-glow-magenta: rgba(255, 0, 127, 0.3);
+
+            /* Colores Neón */
+            --neon-cyan: #00f0ff;
+            --neon-magenta: #ff007f;
+            --neon-purple: #8a2be2;
+            --neon-purple-glow: rgba(138, 43, 226, 0.4);
+            --neon-green: #39ff14;
+
+            /* Textos */
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+
+            /* Gradientes */
+            --gradient-cyber: linear-gradient(135deg, var(--neon-magenta) 0%, var(--neon-purple) 50%, var(--neon-cyan) 100%);
+            --gradient-glow: linear-gradient(135deg, rgba(255, 0, 127, 0.5) 0%, rgba(0, 240, 255, 0.5) 100%);
+            --gradient-dark: linear-gradient(180deg, #0d1222 0%, #070a13 100%);
+
+            /* Transiciones y Sombras */
+            --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --shadow-neon-cyan: 0 0 15px rgba(0, 240, 255, 0.25);
+            --shadow-neon-magenta: 0 0 15px rgba(255, 0, 127, 0.25);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-full: 9999px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-dark-base);
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(138, 43, 226, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(0, 240, 255, 0.06) 0%, transparent 40%);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        /* 2. ESTRUCTURA Y CONTENEDORES */
+        .cyber-container {
+            width: 100%;
+            max-width: 1280px;
+            min-height: 90vh;
+            margin: 20px;
+            background: rgba(13, 18, 34, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Efecto de borde superior neón */
+        .cyber-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-cyber);
+            z-index: 10;
+        }
+
+        /* 3. CABECERA (HEADER) */
+        .cyber-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(13, 18, 34, 0.7);
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cyber-glow-icon {
+            font-size: 1.8rem;
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6));
+        }
+
+        .logo-area h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            color: var(--text-primary);
+        }
+
+        .logo-area h1 span {
+            background: var(--gradient-cyber);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Configuración API Key */
+        .api-key-config {
+            width: 320px;
+            max-width: 100%;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            transition: var(--transition-fast);
+        }
+
+        .api-key-config input {
+            width: 100%;
+            background-color: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 40px 10px 38px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            outline: none;
+            transition: var(--transition-normal);
+        }
+
+        .api-key-config input:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: var(--shadow-neon-cyan);
+        }
+
+        .api-key-config input:focus+.input-icon {
+            color: var(--neon-cyan);
+        }
+
+        .btn-icon {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 4px;
+            transition: var(--transition-fast);
+        }
+
+        .btn-icon:hover {
+            color: var(--text-primary);
+        }
+
+        /* 4. LAYOUT GRID PRINCIPAL */
+        .cyber-grid {
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            flex-grow: 1;
+            min-height: 0;
+        }
+
+        /* PESTAÑAS DE MODO (TABS) */
+        .mode-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: rgba(8, 12, 24, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 4px;
+            margin: 24px 24px 0 24px;
+            gap: 4px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            padding: 10px 4px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-normal);
+            outline: none;
+        }
+
+        .tab-btn i {
+            font-size: 1rem;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .tab-btn.active {
+            background: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Modos de Color en Botones Activos */
+        .tab-btn.active[data-mode="text2img"] {
+            border-bottom: 2px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .tab-btn.active[data-mode="img2img"] {
+            border-bottom: 2px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .tab-btn.active[data-mode="img2vid"] {
+            border-bottom: 2px solid var(--neon-magenta);
+            color: var(--neon-magenta);
+        }
+
+        /* 5. PANEL DE CONTROLES (SIDEBAR) */
+        .control-panel {
+            background: rgba(13, 18, 34, 0.4);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            padding-bottom: 24px;
+        }
+
+        .control-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .control-panel::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: var(--radius-full);
+        }
+
+        .control-panel::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        .panel-section {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .section-title-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 0;
+        }
+
+        .section-title i {
+            color: var(--neon-cyan);
+        }
+
+        .mode-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            letter-spacing: 0.5px;
+            border: 1px solid var(--border-color);
+            transition: var(--transition-normal);
+        }
+
+        /* Colores para el badge */
+        .mode-badge-text2img {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.3);
+        }
+
+        .mode-badge-img2img {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+            border-color: rgba(0, 240, 255, 0.3);
+        }
+
+        .mode-badge-img2vid {
+            background: rgba(255, 0, 127, 0.1);
+            color: var(--neon-magenta);
+            border-color: rgba(255, 0, 127, 0.3);
+        }
+
+        /* Control Dinámico Ocultar/Mostrar */
+        .hidden-control {
+            display: none !important;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            transition: all var(--transition-normal) ease;
+        }
+
+        .control-group label {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Selects */
+        .select-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .select-wrapper select {
+            width: 100%;
+            background-color: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 12px 40px 12px 16px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            appearance: none;
+            -webkit-appearance: none;
+            outline: none;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .select-wrapper select:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 15px var(--neon-purple-glow);
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 16px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: var(--transition-fast);
+        }
+
+        .select-wrapper select:focus+.select-arrow {
+            transform: rotate(180deg);
+            color: var(--neon-purple);
+        }
+
+        /* ZONA DE CARGA DE ARCHIVO (DROPZONE) */
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            background: rgba(18, 24, 44, 0.3);
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition-normal);
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.03);
+            box-shadow: 0 0 12px rgba(0, 240, 255, 0.1);
+        }
+
+        .dropzone-icon {
+            font-size: 2.2rem;
+            color: var(--text-muted);
+            transition: var(--transition-fast);
+        }
+
+        .dropzone:hover .dropzone-icon,
+        .dropzone.dragover .dropzone-icon {
+            color: var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+
+        .dropzone-text {
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .dropzone-subtext {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+
+        /* Vista Previa de Carga */
+        .upload-preview {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            position: relative;
+            animation: fadeIn var(--transition-normal) ease;
+        }
+
+        #previewImg {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-details {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            max-width: 170px;
+        }
+
+        .preview-filename {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-size {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .btn-remove-upload {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--neon-magenta);
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            color: #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            box-shadow: 0 2px 6px rgba(255, 0, 127, 0.4);
+            transition: var(--transition-fast);
+        }
+
+        .btn-remove-upload:hover {
+            transform: scale(1.15);
+            background: #ff3399;
+        }
+
+        /* Acordeón de Opciones Avanzadas */
+        .accordion-item {
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-left: none;
+            border-right: none;
+            background: rgba(18, 24, 44, 0.2);
+            overflow: hidden;
+            transition: var(--transition-normal);
+        }
+
+        .accordion-trigger {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-fast);
+            outline: none;
+        }
+
+        .accordion-trigger:hover {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .accordion-trigger i {
+            font-size: 0.9rem;
+            transition: var(--transition-normal);
+        }
+
+        .accordion-arrow {
+            color: var(--text-muted);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 24px;
+            transition: max-height var(--transition-slow) ease-out, padding var(--transition-slow) ease-out;
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 520px;
+            padding: 0 24px 24px 24px;
+        }
+
+        .accordion-item.active .accordion-arrow {
+            transform: rotate(180deg);
+            color: var(--neon-purple);
+        }
+
+        /* Textareas */
+        .control-group textarea {
+            width: 100%;
+            background-color: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            min-height: 70px;
+            resize: vertical;
+            outline: none;
+            transition: var(--transition-normal);
+        }
+
+        .control-group textarea:focus {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 12px var(--neon-purple-glow);
+        }
+
+        /* Custom Sliders (Steps, Strength, Motion) */
+        .label-with-value {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge-value {
+            background: rgba(138, 43, 226, 0.2);
+            border: 1px solid var(--neon-purple);
+            color: var(--neon-purple);
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .badge-cyan {
+            background: rgba(0, 240, 255, 0.15);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .badge-magenta {
+            background: rgba(255, 0, 127, 0.15);
+            border-color: var(--neon-magenta);
+            color: var(--neon-magenta);
+        }
+
+        /* Sliders */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            outline: none;
+            margin: 12px 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--neon-purple);
+            box-shadow: 0 0 8px var(--neon-purple);
+            cursor: pointer;
+            transition: var(--transition-fast);
+        }
+
+        #strengthRange::-webkit-slider-thumb {
+            background: var(--neon-cyan);
+            box-shadow: 0 0 8px var(--neon-cyan);
+        }
+
+        #motionRange::-webkit-slider-thumb {
+            background: var(--neon-magenta);
+            box-shadow: 0 0 8px var(--neon-magenta);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        .range-limits {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Aspect Ratio */
+        .aspect-ratio-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .aspect-btn {
+            background: var(--bg-dark-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 10px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .aspect-btn span {
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .ratio-box {
+            border: 1.5px solid var(--text-muted);
+            border-radius: 2px;
+            background: transparent;
+            transition: var(--transition-fast);
+        }
+
+        .ratio-1-1 {
+            width: 16px;
+            height: 16px;
+        }
+
+        .ratio-2-3 {
+            width: 12px;
+            height: 18px;
+        }
+
+        .ratio-3-2 {
+            width: 18px;
+            height: 12px;
+        }
+
+        .aspect-btn:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .aspect-btn:hover .ratio-box {
+            border-color: var(--text-primary);
+        }
+
+        .aspect-btn.active {
+            background: rgba(0, 240, 255, 0.05);
+            border-color: var(--neon-cyan);
+            color: var(--neon-cyan);
+        }
+
+        .aspect-btn.active .ratio-box {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 240, 255, 0.2);
+            box-shadow: 0 0 6px rgba(0, 240, 255, 0.4);
+        }
+
+        .panel-info {
+            padding: 24px;
+            margin-top: auto;
+        }
+
+        .panel-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: flex;
+            align-items: flex-start;
+            gap: 6px;
+        }
+
+        .panel-info i {
+            color: var(--neon-purple);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        /* 6. PANEL CANVAS PRINCIPAL */
+        .canvas-panel {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            background: radial-gradient(circle at top right, rgba(0, 240, 255, 0.02), transparent 30%);
+        }
+
+        .prompt-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prompt-header label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .prompt-header label i {
+            color: var(--neon-magenta);
+        }
+
+        .prompt-input-wrapper {
+            position: relative;
+            border-radius: var(--radius-md);
+            background: rgba(18, 24, 44, 0.6);
+            border: 1px solid var(--border-color);
+            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: var(--transition-normal);
+        }
+
+        .prompt-input-wrapper:focus-within {
+            border-color: var(--neon-magenta);
+            box-shadow: 0 0 15px var(--border-glow-magenta), inset 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .prompt-input-wrapper textarea {
+            width: 100%;
+            min-height: 80px;
+            background: transparent;
+            border: none;
+            resize: none;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 1.02rem;
+            line-height: 1.5;
+            outline: none;
+        }
+
+        .prompt-input-wrapper textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Botón Generar */
+        .btn-generate {
+            align-self: flex-end;
+            position: relative;
+            background: var(--gradient-cyber);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 14px 28px;
+            cursor: pointer;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: var(--transition-normal);
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.3);
+        }
+
+        .btn-generate::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: var(--transition-slow);
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4), 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        .btn-generate:hover::before {
+            left: 100%;
+        }
+
+        .btn-generate:active {
+            transform: translateY(0);
+        }
+
+        .btn-generate:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 7. CONTENEDOR DE RESULTADO Y CANVAS */
+        .result-container {
+            flex-grow: 1;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            background: rgba(8, 12, 24, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            min-height: 380px;
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Placeholder Inicial */
+        .result-placeholder {
+            padding: 40px;
+            text-align: center;
+            max-width: 420px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            animation: fadeIn var(--transition-normal) ease-out;
+        }
+
+        .placeholder-icon {
+            font-size: 3.5rem;
+            background: linear-gradient(180deg, var(--text-muted), rgba(100, 116, 139, 0.15));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-placeholder h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .result-placeholder p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Estado de Carga (Laser scanning animation) */
+        .result-loader {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: rgba(7, 10, 19, 0.95);
+            z-index: 5;
+        }
+
+        /* Línea de escaneo láser */
+        .scanner-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-cyber);
+            box-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-magenta);
+            opacity: 0.8;
+            animation: scan 2s linear infinite;
+        }
+
+        .loading-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            z-index: 10;
+        }
+
+        .spinner-neon {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(0, 240, 255, 0.1);
+            border-top-color: var(--neon-cyan);
+            border-bottom-color: var(--neon-magenta);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0.1, 0.5, 0.9) infinite;
+            filter: drop-shadow(0 0 8px var(--neon-cyan));
+        }
+
+        .loading-status span {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--text-primary);
+        }
+
+        .loading-sub {
+            font-size: 0.8rem !important;
+            font-weight: 400 !important;
+            color: var(--text-muted) !important;
+        }
+
+        /* Wrappers para Imagen y Video */
+        .image-display-wrapper,
+        .video-display-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            animation: fadeIn var(--transition-slow) ease-out;
+        }
+
+        .image-display-wrapper img,
+        .video-display-wrapper video {
+            max-width: 100%;
+            max-height: 550px;
+            object-fit: contain;
+            border-radius: var(--radius-md);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .video-display-wrapper video {
+            background-color: #000;
+        }
+
+        /* Acciones en hover */
+        .result-overlay-actions {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+            background: rgba(13, 18, 34, 0.7);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition-normal);
+        }
+
+        .image-display-wrapper:hover .result-overlay-actions,
+        .video-display-wrapper:hover .result-overlay-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .btn-action {
+            background: var(--gradient-cyber);
+            border: none;
+            border-radius: var(--radius-full);
+            color: #ffffff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 8px 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition-normal);
+        }
+
+        .btn-action:hover {
+            box-shadow: 0 0 12px var(--neon-cyan);
+            transform: scale(1.05);
+        }
+
+        /* Estado de Error */
+        .result-error {
+            text-align: center;
+            padding: 30px;
+            max-width: 400px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            animation: fadeIn var(--transition-normal) ease-out;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            color: #ef4444;
+            filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.4));
+        }
+
+        .result-error h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.2rem;
+            color: #fca5a5;
+        }
+
+        .result-error p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .btn-secondary-cyber {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition-fast);
+        }
+
+        .btn-secondary-cyber:hover {
+            border-color: var(--neon-magenta);
+            color: var(--neon-magenta);
+            background: rgba(255, 0, 127, 0.05);
+        }
+
+        /* Spinner */
+        .loader-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(255, 255, 255, 0.2);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* 8. ANIMACIONES CSS */
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            50% {
+                top: calc(100% - 4px);
+            }
+
+            100% {
+                top: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 9. RESPONSIVIDAD */
+        @media (max-width: 1024px) {
+            .cyber-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                max-height: 520px;
+            }
+
+            .canvas-panel {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cyber-header {
+                padding: 16px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .api-key-config {
+                width: 100%;
+            }
+
+            .cyber-container {
+                margin: 10px;
+                min-height: 95vh;
+            }
+
+            .prompt-input-wrapper {
+                padding: 12px;
+            }
+
+            .btn-generate {
+                width: 100%;
+                align-self: stretch;
+            }
+
+            .image-display-wrapper img,
+            .video-display-wrapper video {
+                max-height: 380px;
+            }
+
+            .result-overlay-actions {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+    <!-- FontAwesome para iconos premium -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Outfit para títulos, Inter para texto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Contenedor Principal Cyberpunk -->
+    <div class="cyber-container">
+
+        <!-- Cabecera / Header -->
+        <header class="cyber-header">
+            <div class="logo-area">
+                <i class="fa-solid fa-wand-magic-sparkles cyber-glow-icon"></i>
+                <h1>AIRFORCE<span>AI.STUDIO</span></h1>
+            </div>
+
+            <!-- Configuración de API Key con Opción de Privacidad -->
+            <div class="api-key-config">
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-key input-icon"></i>
+                    <input type="password" id="apiKeyInput" placeholder="Introduce tu API.Airforce Key (sk-air-...)"
+                        autocomplete="off">
+                    <button type="button" id="toggleApiKeyBtn" class="btn-icon" title="Mostrar/Ocultar API Key">
+                        <i class="fa-solid fa-eye-slash" id="toggleApiKeyIcon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Layout de Contenido Grid -->
+        <div class="cyber-grid">
+
+            <!-- Panel de Controles (Formulario) -->
+            <aside class="control-panel">
+
+                <!-- Selector de Modo de Generación (Tabs) -->
+                <div class="mode-tabs">
+                    <button type="button" class="tab-btn active" data-mode="text2img">
+                        <i class="fa-solid fa-align-left"></i> Texto a Imagen
+                    </button>
+                    <button type="button" class="tab-btn" data-mode="img2img">
+                        <i class="fa-solid fa-image"></i> Imagen a Imagen
+                    </button>
+                    <button type="button" class="tab-btn" data-mode="img2vid">
+                        <i class="fa-solid fa-film"></i> Imagen a Video
+                    </button>
+                </div>
+
+                <div class="panel-section">
+                    <div class="section-title-wrapper">
+                        <h2 class="section-title"><i class="fa-solid fa-sliders"></i> Ajustes</h2>
+                        <span class="mode-badge" id="activeModeBadge">TEXTO A IMAGEN</span>
+                    </div>
+
+                    <!-- Selector de Modelo de IA (Imagen) -->
+                    <div class="control-group" id="modelGroup">
+                        <label for="modelSelect">Modelo de IA (Imagen)</label>
+                        <div class="select-wrapper">
+                            <select id="modelSelect">
+                                <option value="flux-2-dev">🔞 Fotorrealismo +18 (Flux 2 Dev)</option>
+                                <option value="flux.1-schnell" selected>Flux.1 Schnell (Ultra Rápido)</option>
+                                <option value="flux.1-dev">Flux.1 Dev (Alta Calidad)</option>
+                                <option value="flux-2-pro">Flux 2 Pro (Calidad Profesional)</option>
+                                <option value="imagen-3">Google Imagen 3 (Fotorrealismo)</option>
+                                <option value="imagen-4">Google Imagen 4 (Máximo Detalle)</option>
+                                <option value="z-image">Z-Image (Estilos Artísticos)</option>
+                                <option value="flux-2-flex">Flux 2 Flex (Estilos Flexibles)</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <div class="control-group hidden-control" id="videoModelGroup">
+                        <label for="videoModelSelect">Modelo de IA (Video)</label>
+                        <div class="select-wrapper">
+                            <select id="videoModelSelect">
+                                <option value="kling" selected>Kling AI (Calidad Cinematográfica)</option>
+                                <option value="luma">Luma Dream Machine (Movimiento Fluido)</option>
+                                <option value="pika">Pika AI (Efectos Especiales)</option>
+                            </select>
+                            <i class="fa-solid fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+
+                    <!-- Zona de Carga de Imagen (Dropzone) - Oculta por defecto en text2img -->
+                    <div class="control-group hidden-control" id="uploadGroup">
+                        <label>Imagen de Referencia</label>
+
+                        <div class="dropzone" id="dropzone">
+                            <i class="fa-solid fa-cloud-arrow-up dropzone-icon"></i>
+                            <span class="dropzone-text">Arrastra una imagen aquí o haz clic para subir</span>
+                            <span class="dropzone-subtext">Formatos: PNG, JPG · Se optimizará automáticamente a
+                                768px</span>
+                            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+                        </div>
+
+                        <!-- Vista previa de la imagen cargada -->
+                        <div class="upload-preview" id="uploadPreview" style="display: none;">
+                            <img id="previewImg" src="" alt="Imagen cargada">
+                            <div class="preview-details">
+                                <span class="preview-filename" id="previewFilename">image.png</span>
+                                <span class="preview-size" id="previewSize">0 KB</span>
+                            </div>
+                            <button type="button" id="removeUploadBtn" class="btn-remove-upload"
+                                title="Eliminar imagen">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Acordeón de Opciones Avanzadas -->
+                <div class="accordion-item">
+                    <button class="accordion-trigger" id="accordionBtn">
+                        <span><i class="fa-solid fa-gears"></i> Parámetros Avanzados</span>
+                        <i class="fa-solid fa-chevron-down accordion-arrow" id="accordionArrow"></i>
+                    </button>
+
+                    <div class="accordion-content" id="accordionContent">
+                        <!-- Negative Prompt (Solo para text2img e img2img) -->
+                        <div class="control-group" id="negativePromptGroup">
+                            <label for="negativePrompt">Negative Prompt</label>
+                            <textarea id="negativePrompt"
+                                placeholder="Ej: ugly, deformed, blurry, low quality, bad anatomy, text, watermark..."></textarea>
+                        </div>
+
+                        <!-- Pasos de Muestreo (Steps) - Común a todos -->
+                        <div class="control-group">
+                            <div class="label-with-value">
+                                <label for="stepsRange">Pasos (Steps)</label>
+                                <span class="badge-value" id="stepsValue">20</span>
+                            </div>
+                            <input type="range" id="stepsRange" min="10" max="50" value="20" step="1">
+                            <div class="range-limits">
+                                <span>10 (Rápido)</span>
+                                <span>50 (Detallado)</span>
+                            </div>
+                        </div>
+
+                        <!-- Fuerza de Cambio (Strength) - Solo para img2img -->
+                        <div class="control-group hidden-control" id="strengthGroup">
+                            <div class="label-with-value">
+                                <label for="strengthRange">Fuerza de Cambio (Strength)</label>
+                                <span class="badge-value badge-cyan" id="strengthValue">0.60</span>
+                            </div>
+                            <input type="range" id="strengthRange" min="0.05" max="0.95" value="0.60" step="0.05">
+                            <div class="range-limits">
+                                <span>0.05 (Original)</span>
+                                <span>0.95 (Nueva)</span>
+                            </div>
+                        </div>
+
+                        <!-- Intensidad de Movimiento (Motion Scale) - Solo para img2vid -->
+                        <div class="control-group hidden-control" id="motionGroup">
+                            <div class="label-with-value">
+                                <label for="motionRange">Intensidad de Movimiento</label>
+                                <span class="badge-value badge-magenta" id="motionValue">40</span>
+                            </div>
+                            <input type="range" id="motionRange" min="1" max="127" value="40" step="1">
+                            <div class="range-limits">
+                                <span>1 (Estático)</span>
+                                <span>127 (Rápido)</span>
+                            </div>
+                        </div>
+
+                        <!-- Relación de Aspecto (Aspect Ratio) - Solo para text2img -->
+                        <div class="control-group" id="aspectRatioGroup">
+                            <label>Relación de Aspecto (Aspect Ratio)</label>
+                            <div class="aspect-ratio-selector">
+                                <button type="button" class="aspect-btn active" data-ratio="1:1" title="Cuadrado">
+                                    <div class="ratio-box ratio-1-1"></div>
+                                    <span>1:1</span>
+                                </button>
+                                <button type="button" class="aspect-btn" data-ratio="2:3" title="Retrato (Vertical)">
+                                    <div class="ratio-box ratio-2-3"></div>
+                                    <span>2:3</span>
+                                </button>
+                                <button type="button" class="aspect-btn" data-ratio="3:2" title="Paisaje (Horizontal)">
+                                    <div class="ratio-box ratio-3-2"></div>
+                                    <span>3:2</span>
+                                </button>
+                            </div>
+                            <!-- Input oculto para registrar el valor activo -->
+                            <input type="hidden" id="aspectRatioInput" value="1:1">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer del Panel (Créditos/Ayuda) -->
+                <div class="panel-info">
+                    <p><i class="fa-solid fa-circle-info"></i> La generación consume créditos de tu cuenta api.airforce
+                        según los parámetros y el modo activo.</p>
+                </div>
+            </aside>
+
+            <!-- Panel de Generación y Resultado -->
+            <main class="canvas-panel">
+
+                <!-- Entrada de Prompt -->
+                <div class="prompt-area">
+                    <div class="prompt-header">
+                        <label for="promptInput" id="promptLabel"><i class="fa-solid fa-comment-dots"></i> Escribe tu
+                            Prompt (Descripción de la imagen)</label>
+                    </div>
+                    <div class="prompt-input-wrapper">
+                        <textarea id="promptInput"
+                            placeholder="Ej: A futuristic cyberpunk samurai standing in the rain under glowing neon signs, highly detailed, octane render, 8k resolution..."></textarea>
+
+                        <!-- Botón de Generación Integrado -->
+                        <button id="generateBtn" class="btn-generate">
+                            <span class="btn-text">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> <span id="generateBtnText">Generar
+                                    Imagen</span>
+                            </span>
+                            <div class="loader-spinner" id="btnSpinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Contenedor del Resultado -->
+                <div class="result-container" id="resultContainer">
+
+                    <!-- Estado Inicial / Placeholder -->
+                    <div class="result-placeholder" id="resultPlaceholder">
+                        <div class="placeholder-icon">
+                            <i class="fa-regular fa-image" id="placeholderIcon"></i>
+                        </div>
+                        <h3 id="placeholderTitle">Tu obra de arte aparecerá aquí</h3>
+                        <p id="placeholderDesc">Escribe un prompt, ajusta las opciones en el panel y haz clic en
+                            "Generar Imagen" para comenzar.</p>
+                    </div>
+
+                    <!-- Estado de Carga (Scanning/Laser Animation) -->
+                    <div class="result-loader" id="resultLoader" style="display: none;">
+                        <div class="scanner-line"></div>
+                        <div class="loading-status">
+                            <div class="spinner-neon"></div>
+                            <span id="loaderStatusText">Renderizando neuronas...</span>
+                            <span class="loading-sub">Conectando con api.airforce API</span>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Visualización de Imagen -->
+                    <div class="image-display-wrapper" id="imageWrapper" style="display: none;">
+                        <img id="generatedImage" src="" alt="Imagen IA Generada">
+
+                        <!-- Acciones sobre el Resultado de Imagen -->
+                        <div class="result-overlay-actions">
+                            <button id="downloadBtn" class="btn-action" title="Descargar imagen a máxima resolución">
+                                <i class="fa-solid fa-download"></i> Descargar Imagen
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Visualización de Video -->
+                    <div class="video-display-wrapper" id="videoWrapper" style="display: none;">
+                        <video id="generatedVideo" controls autoplay loop playsinline alt="Video IA Generado"></video>
+
+                        <!-- Acciones sobre el Resultado de Video -->
+                        <div class="result-overlay-actions">
+                            <button id="downloadVideoBtn" class="btn-action" title="Descargar video MP4">
+                                <i class="fa-solid fa-download"></i> Descargar Video
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Estado de Error -->
+                    <div class="result-error" id="resultError" style="display: none;">
+                        <i class="fa-solid fa-triangle-exclamation error-icon"></i>
+                        <h3>Error de Generación</h3>
+                        <p id="errorMessage">No se pudo procesar la solicitud. Verifica tu API Key y conexión.</p>
+                        <button id="retryBtn" class="btn-secondary-cyber">Reintentar</button>
+                    </div>
+
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Lógica -->
+    <script>
+        /**
+         * ====================================================================
+         * AIRFORCE AI STUDIO - LOGICA MULTI-STUDIO COMPLETA (FOTO / VIDEO)
+         * ====================================================================
+         */
+
+        // 1. CONFIGURACIÓN DE API Y ENDPOINTS DE API.AIRFORCE
+        // RECOMENDACIÓN: Deja esto como "" e introduce tu clave real de api.airforce en la interfaz de la web.
+        const AIRFORCE_API_KEY = "";
+
+        // Endpoints de la API de api.airforce
+        const AIRFORCE_BASE_URL = "https://api.airforce/v1";
+
+        // Función auxiliar para codificar un archivo a Base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Función auxiliar para sondear el estado de la tarea de video
+        async function pollVideoTask(taskId, apiKey) {
+            const maxRetries = 60; // 60 intentos * 5 segundos = 5 minutos máximo
+            for (let i = 0; i < maxRetries; i++) {
+                await new Promise(resolve => setTimeout(resolve, 5000));
+
+                loaderStatusText.textContent = `Procesando video... (Sondeando intento ${i + 1}/${maxRetries})`;
+
+                try {
+                    const response = await fetch(`${AIRFORCE_BASE_URL}/video/tasks/${taskId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${apiKey}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error en sondeo (Código: ${response.status})`);
+                    }
+
+                    const data = await response.json();
+                    if (data.status === 'completed') {
+                        return data.result || data.url || (data.data && data.data.url);
+                    } else if (data.status === 'failed') {
+                        throw new Error(data.error || "La generación de video falló en el servidor.");
+                    }
+                } catch (error) {
+                    console.error("Error al sondear la tarea:", error);
+                }
+            }
+            throw new Error("Se agotó el tiempo de espera para la generación del video.");
+        }
+
+        // 2. REFERENCIAS A ELEMENTOS DEL DOM
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const toggleApiKeyBtn = document.getElementById('toggleApiKeyBtn');
+        const toggleApiKeyIcon = document.getElementById('toggleApiKeyIcon');
+
+        // Pestañas (Tabs)
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        const activeModeBadge = document.getElementById('activeModeBadge');
+
+        // Grupos de Controles Dinámicos
+        const modelGroup = document.getElementById('modelGroup');
+        const videoModelGroup = document.getElementById('videoModelGroup');
+        const uploadGroup = document.getElementById('uploadGroup');
+        const negativePromptGroup = document.getElementById('negativePromptGroup');
+        const aspectRatioGroup = document.getElementById('aspectRatioGroup');
+        const strengthGroup = document.getElementById('strengthGroup');
+        const motionGroup = document.getElementById('motionGroup');
+
+        // Formularios e Inputs
+        const modelSelect = document.getElementById('modelSelect');
+        const videoModelSelect = document.getElementById('videoModelSelect');
+        const promptInput = document.getElementById('promptInput');
+        const promptLabel = document.getElementById('promptLabel');
+        const negativePrompt = document.getElementById('negativePrompt');
+        const stepsRange = document.getElementById('stepsRange');
+        const stepsValue = document.getElementById('stepsValue');
+        const strengthRange = document.getElementById('strengthRange');
+        const strengthValue = document.getElementById('strengthValue');
+        const motionRange = document.getElementById('motionRange');
+        const motionValue = document.getElementById('motionValue');
+        const aspectRatioInput = document.getElementById('aspectRatioInput');
+        const aspectButtons = document.querySelectorAll('.aspect-btn');
+
+        // Drag and Drop (Carga de Imagen)
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('fileInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        const previewImg = document.getElementById('previewImg');
+        const previewFilename = document.getElementById('previewFilename');
+        const previewSize = document.getElementById('previewSize');
+        const removeUploadBtn = document.getElementById('removeUploadBtn');
+
+        // Botón Generar
+        const generateBtn = document.getElementById('generateBtn');
+        const generateBtnText = document.getElementById('generateBtnText');
+        const btnSpinner = document.getElementById('btnSpinner');
+        const btnText = generateBtn.querySelector('.btn-text');
+
+        // Canvas de Resultados
+        const resultContainer = document.getElementById('resultContainer');
+        const resultPlaceholder = document.getElementById('resultPlaceholder');
+        const placeholderIcon = document.getElementById('placeholderIcon');
+        const placeholderTitle = document.getElementById('placeholderTitle');
+        const placeholderDesc = document.getElementById('placeholderDesc');
+        const resultLoader = document.getElementById('resultLoader');
+        const loaderStatusText = document.getElementById('loaderStatusText');
+
+        const imageWrapper = document.getElementById('imageWrapper');
+        const generatedImage = document.getElementById('generatedImage');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        const videoWrapper = document.getElementById('videoWrapper');
+        const generatedVideo = document.getElementById('generatedVideo');
+        const downloadVideoBtn = document.getElementById('downloadVideoBtn');
+
+        const resultError = document.getElementById('resultError');
+        const errorMessage = document.getElementById('errorMessage');
+        const retryBtn = document.getElementById('retryBtn');
+
+        // Variables de Estado
+        let currentMode = 'text2img';
+        let uploadedFile = null;
+        let currentResultUrl = null;
+
+        // ====================================================================
+        // 3. CONTROLADORES DE PESTAÑAS (UI MODES)
+        // ====================================================================
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentMode = button.getAttribute('data-mode');
+                actualizarInterfazModo();
+            });
+        });
+
+        function actualizarInterfazModo() {
+            activeModeBadge.className = 'mode-badge';
+
+            if (currentMode === 'text2img') {
+                modelGroup.classList.remove('hidden-control');
+                negativePromptGroup.classList.remove('hidden-control');
+                aspectRatioGroup.classList.remove('hidden-control');
+                videoModelGroup.classList.add('hidden-control');
+                uploadGroup.classList.add('hidden-control');
+                strengthGroup.classList.add('hidden-control');
+                motionGroup.classList.add('hidden-control');
+
+                activeModeBadge.textContent = "TEXTO A IMAGEN";
+                activeModeBadge.classList.add('mode-badge-text2img');
+                promptLabel.innerHTML = '<i class="fa-solid fa-comment-dots"></i> Escribe tu Prompt';
+                generateBtnText.textContent = "Generar Imagen";
+
+                placeholderIcon.className = 'fa-regular fa-image';
+                placeholderTitle.textContent = "Tu obra de arte aparecerá aquí";
+                placeholderDesc.textContent = "Escribe un prompt y haz clic en \"Generar Imagen\".";
+            } else if (currentMode === 'img2img') {
+                modelGroup.classList.remove('hidden-control');
+                uploadGroup.classList.remove('hidden-control');
+                negativePromptGroup.classList.remove('hidden-control');
+                strengthGroup.classList.remove('hidden-control');
+                videoModelGroup.classList.add('hidden-control');
+                aspectRatioGroup.classList.add('hidden-control');
+                motionGroup.classList.add('hidden-control');
+
+                activeModeBadge.textContent = "IMAGEN A IMAGEN";
+                activeModeBadge.classList.add('mode-badge-img2img');
+                promptLabel.innerHTML = '<i class="fa-solid fa-comment-dots"></i> Prompt de Modificación';
+                generateBtnText.textContent = "Generar Imagen";
+            } else if (currentMode === 'img2vid') {
+                videoModelGroup.classList.remove('hidden-control');
+                uploadGroup.classList.remove('hidden-control');
+                motionGroup.classList.remove('hidden-control');
+                modelGroup.classList.add('hidden-control');
+                negativePromptGroup.classList.add('hidden-control');
+                aspectRatioGroup.classList.add('hidden-control');
+                strengthGroup.classList.add('hidden-control');
+
+                activeModeBadge.textContent = "IMAGEN A VIDEO";
+                activeModeBadge.classList.add('mode-badge-img2vid');
+                promptLabel.innerHTML = '<i class="fa-solid fa-compass"></i> Prompt de Movimiento (Opcional)';
+                generateBtnText.textContent = "Generar Video";
+            }
+        }
+
+        // ====================================================================
+        // 4. MANEJO DE ARCHIVOS (DRAG AND DROP)
+        // ====================================================================
+        if (dropzone) {
+            dropzone.addEventListener('click', () => fileInput.click());
+            dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('dragover'); });
+            dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('dragover');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) procesarArchivoSubido(e.dataTransfer.files[0]);
+            });
+        }
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) procesarArchivoSubido(e.target.files[0]);
+        });
+
+        function redimensionarImagen(file, maxSize = 768) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const url = URL.createObjectURL(file);
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let w = img.width; let h = img.height;
+                    if (w > maxSize || h > maxSize) {
+                        if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+                        else { w = Math.round(w * maxSize / h); h = maxSize; }
+                    }
+                    canvas.width = w; canvas.height = h;
+                    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                    URL.revokeObjectURL(url);
+                    canvas.toBlob(resolve, 'image/jpeg', 0.88);
+                };
+                img.src = url;
+            });
+        }
+
+        function procesarArchivoSubido(file) {
+            if (!file.type.startsWith('image/')) {
+                alert("Sube únicamente archivos de imagen (PNG, JPG).");
+                return;
+            }
+            uploadedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewFilename.textContent = file.name;
+                previewSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+                dropzone.style.display = 'none';
+                uploadPreview.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        removeUploadBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            uploadedFile = null;
+            fileInput.value = "";
+            uploadPreview.style.display = 'none';
+            dropzone.style.display = 'flex';
+        });
+
+        // ====================================================================
+        // 5. CONFIGURACIÓN INICIAL Y EVENTOS UI
+        // ====================================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('airforce_api_key');
+            if (savedKey && !AIRFORCE_API_KEY) {
+                apiKeyInput.value = savedKey;
+            }
+            if (AIRFORCE_API_KEY) {
+                apiKeyInput.value = AIRFORCE_API_KEY;
+                apiKeyInput.disabled = true;
+                apiKeyInput.placeholder = "API Key fija en código";
+            }
+            actualizarInterfazModo();
+        });
+
+        apiKeyInput.addEventListener('input', () => {
+            if (!AIRFORCE_API_KEY) localStorage.setItem('airforce_api_key', apiKeyInput.value.trim());
+        });
+
+        toggleApiKeyBtn.addEventListener('click', () => {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                toggleApiKeyIcon.className = 'fa-solid fa-eye';
+            } else {
+                apiKeyInput.type = 'password';
+                toggleApiKeyIcon.className = 'fa-solid fa-eye-slash';
+            }
+        });
+
+        stepsRange.addEventListener('input', (e) => stepsValue.textContent = e.target.value);
+        strengthRange.addEventListener('input', (e) => strengthValue.textContent = parseFloat(e.target.value).toFixed(2));
+        motionRange.addEventListener('input', (e) => motionValue.textContent = e.target.value);
+
+        aspectButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                aspectButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                aspectRatioInput.value = button.getAttribute('data-ratio');
+            });
+        });
+
+        // ====================================================================
+        // 6. LÓGICA DE CONEXIÓN CORREGIDA (FETCH)
+        // ====================================================================
+        async function generarImagen() {
+            // CORRECCIÓN 1: Priorizar siempre el input manual si la constante global está vacía
+            let apiKey = AIRFORCE_API_KEY ? AIRFORCE_API_KEY : apiKeyInput.value.trim();
+
+            if (!apiKey) {
+                mostrarError("Por favor, introduce una API Key válida en la cabecera.");
+                return;
+            }
+
+            const promptText = promptInput.value.trim();
+            if (currentMode !== 'img2vid' && !promptText) {
+                mostrarError("El prompt no puede estar vacío.");
+                return;
+            }
+
+            if (currentMode !== 'text2img' && !uploadedFile) {
+                mostrarError("Debes subir una imagen de referencia.");
+                return;
+            }
+
+            setLoadingState(true);
+
+            try {
+                let endpoint = "";
+                let headers = {
+                    'Authorization': `Bearer ${apiKey}`,
+                    'Content-Type': 'application/json'
+                };
+                let bodyPayload = null;
+
+                if (currentMode === 'text2img') {
+                    endpoint = `${AIRFORCE_BASE_URL}/images/generations`;
+
+                    const ratio = aspectRatioInput.value;
+                    let width = 512; let height = 512;
+                    if (ratio === "2:3") { width = 512; height = 768; }
+                    else if (ratio === "3:2") { width = 768; height = 512; }
+
+                    let fullPrompt = promptText;
+                    const negPrompt = negativePrompt.value.trim();
+                    if (negPrompt) {
+                        fullPrompt += `, negative prompt: ${negPrompt}`;
+                    }
+
+                    const requestBody = {
+                        model: modelSelect.value,
+                        prompt: fullPrompt,
+                        size: `${width}x${height}`,
+                        response_format: 'url'
+                    };
+
+                    bodyPayload = JSON.stringify(requestBody);
+                }
+
+                else if (currentMode === 'img2img') {
+                    endpoint = `${AIRFORCE_BASE_URL}/images/generations`;
+                    loaderStatusText.textContent = "Optimizando imagen de referencia...";
+                    const imagenOptimizada = await redimensionarImagen(uploadedFile, 768);
+                    const base64Img = await fileToBase64(imagenOptimizada);
+
+                    let fullPrompt = promptText;
+                    const negPrompt = negativePrompt.value.trim();
+                    if (negPrompt) {
+                        fullPrompt += `, negative prompt: ${negPrompt}`;
+                    }
+
+                    const requestBody = {
+                        model: modelSelect.value,
+                        prompt: fullPrompt,
+                        image: base64Img,
+                        init_image: base64Img,
+                        input_images: [base64Img],
+                        response_format: 'url'
+                    };
+
+                    bodyPayload = JSON.stringify(requestBody);
+                }
+
+                else if (currentMode === 'img2vid') {
+                    endpoint = `${AIRFORCE_BASE_URL}/video/generations`;
+                    loaderStatusText.textContent = "Codificando imagen de referencia...";
+                    const base64Img = await fileToBase64(uploadedFile);
+
+                    const requestBody = {
+                        model: videoModelSelect.value,
+                        prompt: promptText || "Animate this image",
+                        image: base64Img,
+                        init_image: base64Img,
+                        mode: "image"
+                    };
+
+                    bodyPayload = JSON.stringify(requestBody);
+                }
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: headers,
+                    body: bodyPayload
+                });
+
+                if (!response.ok) {
+                    let errorText = "";
+                    try {
+                        const errJson = await response.json();
+                        errorText = errJson.error?.message || errJson.message || JSON.stringify(errJson);
+                    } catch (e) {
+                        if (response.status === 429) {
+                            errorText = "Límite de solicitudes de api.airforce excedido (429). Por favor, espera unos segundos antes de reintentar.";
+                        } else if (response.status === 401 || response.status === 403) {
+                            errorText = "Tu API Key de api.airforce parece no ser válida o ha caducado (401/403). Revisa la clave ingresada.";
+                        } else if (response.status === 422) {
+                            errorText = "Los parámetros de la solicitud no son válidos para el modelo seleccionado (422).";
+                        } else {
+                            errorText = `Error en el servidor de api.airforce (Código: ${response.status}).`;
+                        }
+                    }
+                    throw new Error(errorText);
+                }
+
+                const resJson = await response.json();
+
+                if (currentMode === 'img2vid') {
+                    const taskId = resJson.task_id || resJson.id || (resJson.data && resJson.data.task_id);
+                    if (!taskId) {
+                        throw new Error("No se recibió un ID de tarea de video válido desde la API.");
+                    }
+
+                    loaderStatusText.textContent = "Inicializando tarea de video...";
+                    const videoUrl = await pollVideoTask(taskId, apiKey);
+
+                    try {
+                        loaderStatusText.textContent = "Descargando video final...";
+                        const videoResponse = await fetch(videoUrl);
+                        if (!videoResponse.ok) throw new Error("Error al descargar video");
+                        const outputBlob = await videoResponse.blob();
+                        if (currentResultUrl) URL.revokeObjectURL(currentResultUrl);
+                        currentResultUrl = URL.createObjectURL(outputBlob);
+                    } catch (blobError) {
+                        console.warn("No se pudo obtener el blob del video. Usando URL de CDN directamente.", blobError);
+                        currentResultUrl = videoUrl;
+                    }
+
+                    generatedVideo.src = currentResultUrl;
+                    downloadVideoBtn.onclick = () => descargarArchivo(currentResultUrl, 'mp4');
+                    mostrarResultadoVideo();
+                } else {
+                    const imgUrl = resJson.data && resJson.data[0] && resJson.data[0].url;
+                    if (!imgUrl) {
+                        throw new Error("No se recibió una URL de imagen válida desde la API.");
+                    }
+
+                    try {
+                        loaderStatusText.textContent = "Descargando imagen final...";
+                        const imageResponse = await fetch(imgUrl);
+                        if (!imageResponse.ok) throw new Error("Error al descargar imagen");
+                        const outputBlob = await imageResponse.blob();
+                        if (currentResultUrl) URL.revokeObjectURL(currentResultUrl);
+                        currentResultUrl = URL.createObjectURL(outputBlob);
+                    } catch (blobError) {
+                        console.warn("No se pudo obtener el blob de la imagen. Usando URL de CDN directamente.", blobError);
+                        currentResultUrl = imgUrl;
+                    }
+
+                    generatedImage.src = currentResultUrl;
+                    downloadBtn.onclick = () => descargarArchivo(currentResultUrl, 'png');
+                    mostrarResultadoImagen();
+                }
+
+            } catch (error) {
+                mostrarError(error.message);
+            } finally {
+                setLoadingState(false);
+            }
+        }
+
+        function descargarArchivo(url, extension) {
+            const promptText = promptInput.value.trim();
+            const link = document.createElement('a');
+            link.href = url;
+            const cleanPrompt = promptText ? promptText.toLowerCase().replace(/[^a-z0-9]+/g, '_').substring(0, 30) : 'airforce_result';
+            link.download = `${cleanPrompt}_${Date.now()}.${extension}`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                generateBtn.disabled = true;
+                btnSpinner.style.display = 'block';
+                if (btnText) btnText.style.display = 'none';
+                resultPlaceholder.style.display = 'none';
+                imageWrapper.style.display = 'none';
+                videoWrapper.style.display = 'none';
+                resultError.style.display = 'none';
+                loaderStatusText.textContent = currentMode === 'img2vid' ? "Generando animación..." : "Renderizando imagen...";
+                resultLoader.style.display = 'flex';
+            } else {
+                generateBtn.disabled = false;
+                btnSpinner.style.display = 'none';
+                if (btnText) btnText.style.display = 'flex';
+            }
+        }
+
+        function mostrarResultadoImagen() {
+            resultLoader.style.display = 'none';
+            resultPlaceholder.style.display = 'none';
+            resultError.style.display = 'none';
+            videoWrapper.style.display = 'none';
+            imageWrapper.style.display = 'flex';
+        }
+
+        function mostrarResultadoVideo() {
+            resultLoader.style.display = 'none';
+            resultPlaceholder.style.display = 'none';
+            resultError.style.display = 'none';
+            imageWrapper.style.display = 'none';
+            videoWrapper.style.display = 'flex';
+            generatedVideo.load();
+            generatedVideo.play().catch(err => console.log(err));
+        }
+
+        function mostrarError(mensaje) {
+            resultLoader.style.display = 'none';
+            resultPlaceholder.style.display = 'none';
+            imageWrapper.style.display = 'none';
+            videoWrapper.style.display = 'none';
+            errorMessage.textContent = mensaje;
+            resultError.style.display = 'flex';
+        }
+
+        generateBtn.addEventListener('click', generarImagen);
+        retryBtn.addEventListener('click', generarImagen);
+    </script>
+</body>
+
+</html>
