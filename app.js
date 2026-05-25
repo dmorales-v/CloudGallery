@@ -1,48 +1,35 @@
 /**
- * LÓGICA DEFINITIVA PARA CLOUD GALLERY (Soporta Texto, Imagen y Video)
+ * Lógica unificada para CloudGallery (OpenRouter)
  */
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-// Helper para convertir imagen a Base64
-async function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-    });
-}
-
 async function generar() {
     const apiKey = document.getElementById('apiKeyInput').value.trim();
     const prompt = document.getElementById('promptInput').value.trim();
-    const model = document.getElementById('modelSelect').value;
+    const fileInput = document.getElementById('fileInput');
 
-    // Detectamos en qué modo está la web (según tu captura, hay 3 tabs)
-    // Asumimos que tienes una variable 'currentMode' o clases activas
-    const mode = document.querySelector('.tab-btn.active')?.getAttribute('data-mode') || 'text2img';
+    // 1. Modelo por defecto para evitar errores si no seleccionan nada
+    const model = document.getElementById('modelSelect').value || "openai/dall-e-3";
+
+    if (!apiKey) { alert("Introduce tu API Key de OpenRouter"); return; }
+    if (!prompt) { alert("Escribe un prompt"); return; }
 
     setLoadingState(true);
 
     try {
-        let payload = { model: model, messages: [] };
+        let bodyPayload = {
+            model: model,
+            messages: [{ role: "user", content: prompt }]
+        };
 
-        if (mode === 'text2img') {
-            payload.messages = [{ role: "user", content: prompt }];
-        } else {
-            // Modo Imagen a Imagen / Video: Requiere enviar la imagen subida
-            const fileInput = document.getElementById('fileInput');
-            if (!fileInput.files[0]) throw new Error("Por favor sube una imagen primero.");
-
-            const base64Image = await fileToBase64(fileInput.files[0]);
-            payload.messages = [{
-                role: "user",
-                content: [
-                    { type: "text", text: prompt },
-                    { type: "image_url", image_url: { url: base64Image } }
-                ]
-            }];
+        // 2. Si hay imagen subida, la convertimos a base64 y la incluimos
+        if (fileInput.files && fileInput.files[0]) {
+            const base64 = await toBase64(fileInput.files[0]);
+            bodyPayload.messages[0].content = [
+                { type: "text", text: prompt },
+                { type: "image_url", image_url: { url: base64 } }
+            ];
         }
 
         const response = await fetch(OPENROUTER_URL, {
@@ -50,18 +37,22 @@ async function generar() {
             headers: {
                 'Authorization': `Bearer ${apiKey}`,
                 'HTTP-Referer': 'https://dmorales-v.github.io/CloudGallery/',
+                'X-Title': 'CloudGallery AI',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(bodyPayload)
         });
 
         const data = await response.json();
 
-        // Mostrar resultado
-        const result = data.choices[0].message.content;
-        const img = document.getElementById('generatedImage');
-        img.src = result;
-        document.getElementById('imageWrapper').style.display = 'block';
+        // 3. Mostrar resultado
+        if (data.choices && data.choices[0].message.content) {
+            const resultUrl = data.choices[0].message.content;
+            document.getElementById('generatedImage').src = resultUrl;
+            document.getElementById('imageWrapper').style.display = 'block';
+        } else {
+            throw new Error("El modelo no generó una respuesta válida.");
+        }
 
     } catch (err) {
         alert("Error: " + err.message);
@@ -70,5 +61,17 @@ async function generar() {
     }
 }
 
-// Conectar botón
+function toBase64(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+    });
+}
+
+function setLoadingState(loading) {
+    document.getElementById('generateBtn').disabled = loading;
+    document.getElementById('resultLoader').style.display = loading ? 'flex' : 'none';
+}
+
 document.getElementById('generateBtn').addEventListener('click', generar);
