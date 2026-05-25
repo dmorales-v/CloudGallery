@@ -1,37 +1,50 @@
 /**
- * Lógica completa para Img2Img con OpenRouter
+ * LÓGICA DEFINITIVA PARA CLOUD GALLERY (Soporta Texto, Imagen y Video)
  */
 
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-// Función para convertir archivo a Base64
-function fileToBase64(file) {
+// Helper para convertir imagen a Base64
+async function fileToBase64(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        reader.onerror = reject;
     });
 }
 
-async function generarImagen() {
+async function generar() {
     const apiKey = document.getElementById('apiKeyInput').value.trim();
-    const promptText = document.getElementById('promptInput').value.trim();
+    const prompt = document.getElementById('promptInput').value.trim();
     const model = document.getElementById('modelSelect').value;
-    const fileInput = document.getElementById('fileInput');
 
-    if (!apiKey || !promptText || fileInput.files.length === 0) {
-        alert("Por favor, ingresa tu API Key, un prompt y una imagen.");
-        return;
-    }
+    // Detectamos en qué modo está la web (según tu captura, hay 3 tabs)
+    // Asumimos que tienes una variable 'currentMode' o clases activas
+    const mode = document.querySelector('.tab-btn.active')?.getAttribute('data-mode') || 'text2img';
 
     setLoadingState(true);
 
     try {
-        // 1. Convertir imagen subida a base64
-        const base64Image = await fileToBase64(fileInput.files[0]);
+        let payload = { model: model, messages: [] };
 
-        // 2. Preparar petición para modelo de Visión
+        if (mode === 'text2img') {
+            payload.messages = [{ role: "user", content: prompt }];
+        } else {
+            // Modo Imagen a Imagen / Video: Requiere enviar la imagen subida
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files[0]) throw new Error("Por favor sube una imagen primero.");
+
+            const base64Image = await fileToBase64(fileInput.files[0]);
+            payload.messages = [{
+                role: "user",
+                content: [
+                    { type: "text", text: prompt },
+                    { type: "image_url", image_url: { url: base64Image } }
+                ]
+            }];
+        }
+
         const response = await fetch(OPENROUTER_URL, {
             method: 'POST',
             headers: {
@@ -39,35 +52,23 @@ async function generarImagen() {
                 'HTTP-Referer': 'https://dmorales-v.github.io/CloudGallery/',
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-                model: model,
-                messages: [{
-                    role: "user",
-                    content: [
-                        { type: "text", text: promptText },
-                        { type: "image_url", image_url: { url: base64Image } }
-                    ]
-                }]
-            })
+            body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
-        // 3. Mostrar resultado
-        if (data.choices && data.choices[0].message.content) {
-            document.getElementById('generatedImage').src = data.choices[0].message.content;
-            document.getElementById('imageWrapper').style.display = 'block';
-        }
-    } catch (error) {
-        alert("Error: " + error.message);
+        // Mostrar resultado
+        const result = data.choices[0].message.content;
+        const img = document.getElementById('generatedImage');
+        img.src = result;
+        document.getElementById('imageWrapper').style.display = 'block';
+
+    } catch (err) {
+        alert("Error: " + err.message);
     } finally {
         setLoadingState(false);
     }
 }
 
-function setLoadingState(isLoading) {
-    document.getElementById('generateBtn').disabled = isLoading;
-    document.getElementById('resultLoader').style.display = isLoading ? 'flex' : 'none';
-}
-
-document.getElementById('generateBtn').addEventListener('click', generarImagen);
+// Conectar botón
+document.getElementById('generateBtn').addEventListener('click', generar);
